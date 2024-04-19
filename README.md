@@ -44,10 +44,6 @@ torch version: 1.8.0
 
 You can specify the gpu id, the model name, the used dataset by cmd line arguments. 
 
-
-## Implementation Details
-We use the Euler ODE solver from the [torchdiffeq](https://github.com/rtqichen/torchdiffeq) package. The Encoder, $f_\text{ODE}$, and Decoder of ReCODE are constructed using two-layer MLPs with hidden size set to $64$. To ensure a fair comparison, we set the embedding size of all methods to $32$ and use a batch size of $512$. The Adam optimizer is employed to train all models, and we carefully tune the learning rate among {1e-3, 5e-4,1e-4,5e-5,1e-5}, as well as the weight decay among {1e-5, 1e-6, 1e-7}. For sequential-based methods, we set the maximum length of historical interactions to $20$. 
-
 ## Reference
 
-Our implementations and experiments are conducted based on [ReChorus](https://github.com/THUwangcy/ReChorus) benchmark.
+Our implementations and experiments are conducted based on [ReChorus](https://github.com/THUwangcy/ReChorus) benchmark. We use the Euler ODE solver from the [torchdiffeq](https://github.com/rtqichen/torchdiffeq) package.
