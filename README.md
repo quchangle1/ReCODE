@@ -1,6 +1,6 @@
 # ReCODE
 
-This is the official implementation for the SIGIR 2024 paper "ReCODE: Modeling Repeat Consumption with Neural ODE".
+This is the official implementation for the SIGIR 2024 paper "ReCODE: Modeling Repeat Consumption with Neural ODE" [[PDF](https://arxiv.org/abs/2405.16550v1)].
 
 ## Citation
 
