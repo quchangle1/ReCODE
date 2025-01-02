@@ -2,7 +2,8 @@
 
 """ SASRec_ReCODE
 CMD example:
-    python main.py --model_name SASRec --emb_size 64 --num_layers 1 --num_heads 1 --lr 1e-4 --l2 1e-6 --history_max 20 --dataset 'Grocery_and_Gourmet_Food'
+    python main.py --model_name SASRec_ReCODE --emb_size 32 --num_layers 1 --num_heads 1 --hidden_size 64 --steps 77 --method 'euler' \
+    --history_max 20 --lr 1e-4 --l2 1e-5 --dataset "MMTD"
 """
 
 import torch
@@ -111,7 +112,6 @@ class SASRec_ReCODE(SequentialModel):
         pos_vectors = self.p_embeddings(position)
         his_vectors = his_vectors + pos_vectors
 
-
         causality_mask = np.tril(np.ones((1, 1, seq_len, seq_len), dtype=np.int))
         attn_mask = torch.from_numpy(causality_mask).to(self.device)
         for block in self.transformer_block:
@@ -138,7 +138,6 @@ class SASRec_ReCODE(SequentialModel):
 
         t = torch.linspace(0, self.steps - 1, self.steps).to(self.device)
 
-        
         outputs = odeint(self.model, init, t, method=self.method, options={"perturb": "True", "step_size": self.step_size})
         outputs = outputs.transpose(0, 1)
 
