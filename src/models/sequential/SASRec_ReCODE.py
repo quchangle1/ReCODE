@@ -53,6 +53,9 @@ class SASRec_ReCODE(SequentialModel):
                             help="the num of step for ODE")
         parser.add_argument('--time_scalar', type=int, default=3600 * 24 * 7,
                             help='Time scalar for time intervals.')
+        parser.add_argument('--step_size', type=int, default=10,
+                            help='step_size for ODE') 
+        
         return SequentialModel.parse_model_args(parser)
 
     def __init__(self, args, corpus):
@@ -66,13 +69,16 @@ class SASRec_ReCODE(SequentialModel):
         self.method = args.method
         self.steps = args.steps
         self.time_scalar = args.time_scalar
+        self.step_size = args.step_size
+        
         self._define_params()
         self.apply(self.init_weights)
 
     def _define_params(self):
         self.i_embeddings = nn.Embedding(self.item_num, self.emb_size)
         self.p_embeddings = nn.Embedding(self.max_his + 1, self.emb_size)
-
+        self.model = ODEFunc(self.hidden_size).to(self.device)
+        
         self.transformer_block = nn.ModuleList([
             layers.TransformerLayer(d_model=self.emb_size, d_ff=self.emb_size, n_heads=self.num_heads,
                                     dropout=self.dropout, kq_same=False)
@@ -128,9 +134,12 @@ class SASRec_ReCODE(SequentialModel):
         init_state = torch.cat(init_state, dim=-1)
 
         init = self.en(init_state)
+        init = nn.functional.normalize(init)
+
         t = torch.linspace(0, self.steps - 1, self.steps).to(self.device)
-        model = ODEFunc(self.hidden_size).to(self.device)
-        outputs = odeint(model, init, t, method=self.method, options={"perturb": "True", "step_size": self.steps})
+
+        
+        outputs = odeint(self.model, init, t, method=self.method, options={"perturb": "True", "step_size": self.step_size})
         outputs = outputs.transpose(0, 1)
 
         outputs = torch.squeeze(self.o_net(outputs))
